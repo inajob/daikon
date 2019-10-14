@@ -6,7 +6,11 @@
         <meta name="viewport" content="width=240, user-scalable=no" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
  
-        <title>game</title>
+        <title>DAIKON YOKE</title>
+        <meta property="og:title" content="DAIKON YOKE">
+        <meta property="og:description" content="大根をよけるゲームです">
+        <meta property="og:image" content="http://inajob.dip.jp/daikon/img/daikon.gif">
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <script>
 
@@ -76,7 +80,7 @@ Chr.prototype = {
 function MainScene(){
   //
   this.bullets = [];
-  this.my = new Chr(0,20,13*1.5,20*1.5);
+  this.my = new Chr(120,20,13*1.5,20*1.5);
   this.my.type="my"
 }
 MainScene.prototype = {
@@ -95,7 +99,7 @@ MainScene.prototype = {
     var result = true;
 
     ctx.fillStyle="blue";
-    ctx.fillRect(gx,gy,10,10);
+    //ctx.fillRect(gx,gy,10,10);
 
     // controller
     this.my.vx = (gx - this.my.x)/10;
@@ -106,7 +110,7 @@ MainScene.prototype = {
     if(time%100 == 0){
 
       // 時間に応じて増えてくる
-      if(Math.random() > 0.5){
+      if(Math.random() < (0.5/(time/1000))){
         for(var i = 0; i < time/100; i ++){
           this.bullets.push(c = new Chr(Math.random() * 240,320,5 * 1.5, 13 * 1.5));
           c.vx = (Math.random() - 0.5);
@@ -142,7 +146,7 @@ MainScene.prototype = {
       }
     });
     ctx.fillStyle="white";
-    ctx.fillText('score:' + (time/100 | 0),10,20);
+    ctx.fillText('score: ' + (time/100 | 0),10,20);
     
     return result;
   }
@@ -171,17 +175,25 @@ $(function(){
     var scene = new MainScene();
 
     $(document.body).bind('touchstart touchmove mousemove', function(e){
-      var x = e.offsetX || event.changedTouches[0].pageX;
-      var y = e.offsetY || event.changedTouches[0].pageY;
+      var x = e.offsetX;
+      var y = e.offsetY;
+      if(x == undefined){
+       x = event.changedTouches[0].pageX
+      }
+      if(y == undefined){
+       y = event.changedTouches[0].pageY
+      }
 
       gx = x;
       gy = y;
 
-      e.preventDefault();
+      if(e.type=='touchmove'){
+        e.preventDefault();
+      }
     })
     function tick(){
       // 初期化
-      ctx.fillStyle='#300';
+      ctx.fillStyle='#444';
       ctx.fillRect(0,0,240,320);
  
       time ++;
@@ -190,7 +202,9 @@ $(function(){
       if(result){
         setTimeout(tick, 10);
       }else{
-        $('.js-over-logo').text("score:"+(time/100 | 0));
+        var score = (time/100 | 0);
+        $('.js-over-logo').text("score:"+ score);
+        $('.js-over-twit').attr('href','https://twitter.com/intent/tweet?hashtags=daikon&url='+encodeURIComponent('http://inajob.dip.jp/daikon/daikon.html')+'&text='+encodeURIComponent('- DAIKON YOKE - あなたのスコアは' + score + 'でした！'));
         $('.over .gameover').fadeIn();
       }
     }
@@ -205,7 +219,7 @@ $(function(){
   padding:0px;
 }
 body{
-  background-color:black;
+  background-color:#333;
 }
 .main{
   position:absolute;
@@ -248,6 +262,12 @@ body{
   100% {opacity:1;}
 }
 
+.tweet{
+  font-size:small;
+  background-color:white;
+  color:blue;
+}
+
 </style>
     <body>
         <div class="main">
@@ -259,9 +279,9 @@ body{
             <h1 class="touch blink js-retry">TOUCH START</h1>
           </div>
           <div class="gameover">
-            <h1 class="logo js-over-logo">GAME OVER</h1>
+            <h1 class="logo"><span class="js-over-logo">GAME OVER</span><a target="_blank" class="tweet js-over-twit" href="#">TWEET</a></h1>
             <div class="ad">
-              <iframe src="http://rcm-fe.amazon-adsystem.com/e/cm?t=inajob-22&o=9&p=8&l=as1&asins=B006L0WKH4&ref=tf_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+              <iframe class="ad1" src="http://rcm-fe.amazon-adsystem.com/e/cm?t=inajob-22&o=9&p=8&l=as1&asins=B006L0WKH4&ref=tf_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
             </div>
             <h1 class="logo blink js-title">RETRY</h1>
           </div>
